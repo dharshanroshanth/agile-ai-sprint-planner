@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  # Backend FastAPI Service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: agile-ai-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=True
+      - LOG_LEVEL=INFO
+      - DATABASE_URL=sqlite:///./agile_planner.db
+    volumes:
+      - ./backend:/app
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+    networks:
+      - agile-ai-network
+
+  # Frontend React Service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: agile-ai-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - agile-ai-network
+
+  # Optional: PostgreSQL Database (for production)
+  # postgres:
+  #   image: postgres:15-alpine
+  #   container_name: agile-ai-postgres
+  #   environment:
+  #     POSTGRES_USER: agile
+  #     POSTGRES_PASSWORD: password
+  #     POSTGRES_DB: agile_planner
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   networks:
+  #     - agile-ai-network
+
+networks:
+  agile-ai-network:
+    driver: bridge
+
+# volumes:
+#   postgres_data:

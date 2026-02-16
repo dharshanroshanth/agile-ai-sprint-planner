@@ -18,10 +18,52 @@ This system uses AI to:
 - **Predict risks** before sprints fail
 - **Learn continuously** from past sprints
 
-## 🏗️ Architecture
+## 🏗️ Project Structure
 
-The system uses a multi-layer architecture:
+```
+agile-ai-sprint-planner/
+├── backend/                    # FastAPI REST API
+│   ├── src/
+│   │   ├── main.py
+│   │   ├── api/               # REST endpoints
+│   │   ├── data_model/        # Pydantic models
+│   │   ├── feature_engine/    # ML features
+│   │   ├── decision_engine/   # Task assignment
+│   │   ├── sprint_planner/    # Sprint optimization
+│   │   ├── learning/          # Feedback loop
+│   │   └── utils/             # Logging
+│   ├── config/                # Settings
+│   ├── tests/                 # Unit tests
+│   ├── requirements.txt        # Python dependencies
+│   ├── Dockerfile             # Docker config
+│   └── README.md
+│
+├── frontend/                   # React Application
+│   ├── public/
+│   ├── src/
+│   │   ├── components/        # React components
+│   │   ├── pages/             # Page components
+│   │   ├── hooks/             # Custom hooks
+│   │   ├── utils/             # Utilities
+│   │   └── styles/            # Styling
+│   ├── package.json           # NPM dependencies
+│   ├── Dockerfile             # Docker config
+│   └── README.md
+│
+├── docs/                       # Documentation
+│   ├── ARCHITECTURE.md         # System design
+│   ├── DATA_SCHEMA.md          # Data models
+│   └── API_DOCUMENTATION.md    # API reference
+│
+├── docker-compose.yml          # Multi-container setup
+├── README.md                   # Main documentation
+├── TESTING.md                  # Testing guide
+├── CONTRIBUTING.md             # Contribution guidelines
+└── .gitignore
 
+## Architecture Layers
+
+### Backend Layers
 ```
 ┌─────────────────────────────────────────────────┐
 │ FastAPI Web Application                         │
@@ -61,53 +103,144 @@ The system uses a multi-layer architecture:
 └─────────────────────────────────────────────────┘
 ```
 
-## 🛠️ API Endpoints
-
-### 1. Create Team Member
-
-```bash
-POST /team-members
-Content-Type: application/json
-
-{
-  "name": "Alice Johnson",
-  "email": "alice@example.com",
-  "skills": [
-    {"name": "Python", "proficiency": 0.9},
-    {"name": "FastAPI", "proficiency": 0.8}
-  ],
-  "total_hours_available": 40
-}
+### Frontend
+- React 18 with modern hooks
+- Responsive UI components
+- Real-time API integration
+- Data visualization dashboard
 ```
 
-### 2. Create Task
+## 🛠️ API Endpoin & Setup
 
+### Prerequisites
+- Python 3.12+
+- Node.js 16+
+- Docker & Docker Compose (optional)
+
+### Option 1: Local Development
+
+#### Backend Setup
 ```bash
-POST /tasks
-Content-Type: application/json
+cd backend
 
-{
-  "title": "Build Authentication System",
-  "description": "Implement JWT-based authentication",
-  "required_skills": ["Python", "FastAPI"],
-  "complexity": 0.7,
-  "estimated_hours": 8,
-  "priority": "high",
-  "deadline": "2026-03-01T17:00:00"
-}
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Configure environment
+cp .env.example .env
+
+# Run backend
+uvicorn src.main:app --reload
 ```
 
-### 3. Plan Sprint
+Backend API: `http://localhost:8000`  
+API Docs: `http://localhost:8000/docs`
+
+#### Frontend Setup
+```bash
+cd frontend
+
+# Install dependencies
+npm install
+
+# Configure environment
+cp .env.example .env
+
+# Run frontend
+npm start
+```
+
+Frontend App: `http://localhost:3000`
+
+### Option 2: Docker Compose (All-in-One)
 
 ```bash
-POST /sprints/plan
-Content-Type: application/json
+# From root directory
+docker-compose up
 
-{
-  "name": "Sprint 1",
-  "duration_days": 14,
-  "team_member_ids": ["member-id-1", "member-id-2"]
+# Frontend: http://localhost:3000
+# Backend API: http://localhost:8000
+# API Docs: http://localhost:8000/docs
+```
+
+### Option 3: Individual Docker Containers
+
+```bash
+# Backend
+cd backend
+docker build -t agile-ai-backend .
+docker run -p 8000:8000 agile-ai-backend
+
+# Frontend
+cd frontend
+docker build -t agile-ai-frontend .
+docker run -p 3000:3000 agile-ai-frontend
+```
+
+### Configuration
+
+**Backend** (`backend/.env`):
+```env
+DEBUG=True
+DATABASE_URL=sqlite:///./agile_planner.db
+OPENAI_API_KEY=your-key
+GEMINI_API_KEY=your-key
+```
+### Backend Documentation
+- [Backend README](backend/README.md) - Backend setup and configuration
+- [Architecture Guide](docs/ARCHITECTURE.md) - System design and algorithms
+- [Data Schema](docs/DATA_SCHEMA.md) - Complete data model documentation
+- [API Documentation](docs/API_DOCUMENTATION.md) - Endpoint reference with examples
+
+### Frontend Documentation
+- [Frontend README](frontend/README.md) - Frontend setup and components
+
+### Development & Testing
+- [Testing Guide](TESTING.md) - Complete testing instructions with API examples
+- [Contributing Guide](CONTRIBUTING.md) - Development guidelines and PR process
+
+### Related Resources
+- [GitHub Repository](https://github.com/dharshanroshanth/agile-ai-sprint-planner)
+- [Issues & Roadmap](https://github.com/dharshanroshanth/agile-ai-sprint-planner/issues)
+REACT_APP_API_URL=http://localhost:8000
+``
 }
+### Backend Tests
+```bash
+cd backend
+
+# Run all tests
+pytest tests/ -v
+
+# Run specific test suite
+pytest tests/test_feature_engine.py -v
+
+# Run with coverage
+pytest tests/ --cov=src --cov-report=html
+```
+
+### Frontend Tests (Coming Soon)
+```bash
+cd frontend
+
+# Run React tests
+npm test
+
+# Run with coverage
+npm test -- --coverage
+```
+
+### Full Test Suite Results
+✅ 18/18 Backend Tests Passing
+- Feature Extraction: 5 tests
+- Decision Engine: 5 tests  
+- Sprint Planning: 8 tests
+
+See [TESTING.md](TESTING.md) for detailed test documentation and API testing examples.
 ```
 
 ## 📦 Installation
